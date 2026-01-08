@@ -25,31 +25,7 @@ const limiter = rateLimit({
 });
 
 app.use(limiter);
-// app.use((req, res, next) => {
-//     res.setHeader(
-//         'Content-Security-Policy',
-//         "default-src 'self'; " +
-//         "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
-//         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
-//         "img-src 'self' data: https: http: blob:; " +
-//         "font-src 'self' https://fonts.gstatic.com; " +
-//         "connect-src 'self' http://localhost:5000 http://127.0.0.1:5500 https://paper-bloom.onrender.com;"
-//     );
-//     next();
-// });
-app.use(helmet({
-    contentSecurityPolicy: {
-        directives: {
-            defaultSrc: ["'self'"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-            scriptSrc: ["'self'", "'unsafe-inline'"],
-            fontSrc: ["'self'", "https://fonts.gstatic.com"],
-            imgSrc: ["'self'", "data:", "https:", "http:", "blob:"],
-            connectSrc: ["'self'", "http://localhost:5000", "http://127.0.0.1:5500", "https://paper-bloom.onrender.com;"],
-            frameSrc: ["'self'"]
-        }
-    }
-}));
+app.use(helmet());
 app.use(morgan('dev'));
 app.use(cors({
   origin: [
