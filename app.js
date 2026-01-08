@@ -25,18 +25,18 @@ const limiter = rateLimit({
 });
 
 app.use(limiter);
-app.use((req, res, next) => {
-    res.setHeader(
-        'Content-Security-Policy',
-        "default-src 'self'; " +
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
-        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
-        "img-src 'self' data: https: http: blob:; " +
-        "font-src 'self' https://fonts.gstatic.com; " +
-        "connect-src 'self' http://localhost:5000 http://127.0.0.1:5500 https://paper-bloom.onrender.com;"
-    );
-    next();
-});
+// app.use((req, res, next) => {
+//     res.setHeader(
+//         'Content-Security-Policy',
+//         "default-src 'self'; " +
+//         "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
+//         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+//         "img-src 'self' data: https: http: blob:; " +
+//         "font-src 'self' https://fonts.gstatic.com; " +
+//         "connect-src 'self' http://localhost:5000 http://127.0.0.1:5500 https://paper-bloom.onrender.com;"
+//     );
+//     next();
+// });
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
