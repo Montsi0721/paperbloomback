@@ -33,7 +33,7 @@ app.use((req, res, next) => {
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
         "img-src 'self' data: https: http: blob:; " +
         "font-src 'self' https://fonts.gstatic.com; " +
-        "connect-src 'self' http://localhost:5000;"
+        "connect-src 'self' http://localhost:5000 http://127.0.0.1:5500 https://paper-bloom.onrender.com;"
     );
     next();
 });
@@ -45,13 +45,19 @@ app.use(helmet({
             scriptSrc: ["'self'", "'unsafe-inline'"],
             fontSrc: ["'self'", "https://fonts.gstatic.com"],
             imgSrc: ["'self'", "data:", "https:", "http:", "blob:"],
-            connectSrc: ["'self'", "http://localhost:5000"],
+            connectSrc: ["'self'", "http://localhost:5000", "http://127.0.0.1:5500", "https://paper-bloom.onrender.com;"],
             frameSrc: ["'self'"]
         }
     }
 }));
 app.use(morgan('dev'));
-app.use(cors({ origin: 'http://localhost:3000' }));  // Restrict origins in prod
+app.use(cors({
+  origin: [
+    'http://localhost:5000', 
+    'http://127.0.0.1:5500',
+    'https://paper-bloom.onrender.com'  // Add your production URL
+  ]
+}));
 app.use(express.json());
 app.use(express.static('frontend'));
 app.use('/images', express.static(path.join(__dirname, 'images')));
