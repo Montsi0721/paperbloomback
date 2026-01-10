@@ -15,6 +15,11 @@ import paymentRoutes from './routes/payments.routes.js';
 
 const app = express();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,  // 15 minutes
     max: 100,  // Limit each IP to 100 requests per window
@@ -48,9 +53,6 @@ app.use(cors({
 app.use(express.json());
 app.set('trust proxy', 1); // or true
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 // API Routes
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
@@ -59,7 +61,6 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/admin/analytics', adminAnalytics);
 app.use('/api/analytics', analyticsRoutes);
-app.use('/images', express.static(path.join(__dirname, 'images')));
 
 // Root route - API documentation
 app.get('/', (req, res) => {
@@ -118,4 +119,5 @@ app.use((err, req, res, next) => {
 
 
 export default app;
+
 
