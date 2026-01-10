@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
@@ -46,6 +48,9 @@ app.use(cors({
 app.use(express.json());
 app.set('trust proxy', 1); // or true
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // API Routes
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
@@ -54,6 +59,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/admin/analytics', adminAnalytics);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 // Root route - API documentation
 app.get('/', (req, res) => {
@@ -112,3 +118,4 @@ app.use((err, req, res, next) => {
 
 
 export default app;
+
