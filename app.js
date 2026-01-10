@@ -44,6 +44,7 @@ app.use(cors({
 }));
 
 app.use(express.json());
+app.set('trust proxy', 1); // or true
 
 // API Routes
 app.use('/api/products', productRoutes);
@@ -108,5 +109,6 @@ app.use((err, req, res, next) => {
         error: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
 });
+
 
 export default app;
