@@ -200,5 +200,3 @@ export const sendStatusUpdate = async (to, order, newStatus) => {
 
     return sendEmail(to, `Order #${order.orderNumber} Status Update: ${newStatus}`, html);
 };
-
-export default resend;
