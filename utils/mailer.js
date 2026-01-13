@@ -1,14 +1,10 @@
-import { Resend } from 'resend';
+import * as SibApiV3Sdk from '@getbrevo/brevo';
 
-// Initialize Resend client once
-const resend = new Resend(process.env.RESEND_API_KEY);
+const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+const defaultClient = SibApiV3Sdk.ApiClient.instance;
+const apiKeyAuth = defaultClient.authentications['api-key'];
+apiKeyAuth.apiKey = process.env.BREVO_API_KEY;
 
-/**
- * Send order notification to admin
- * @param {Object} order - Order object from database
- * @param {Array} itemDetails - Array of item details with names
- * @returns {Promise<Object>} - Result object with success status
- */
 export const sendOrderMail = async (order, itemDetails) => {
     const adminEmail = process.env.MAIL_USER;
 
@@ -91,56 +87,46 @@ export const sendOrderMail = async (order, itemDetails) => {
         </div>
     `;
 
+    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+    sendSmtpEmail.sender = { 
+        email: 'your-verified-email@gmail.com',  // Must be the verified sender from step 2
+        name: 'PaperBloom Team' 
+    };
+    sendSmtpEmail.to = [{ email: adminEmail, name: 'Admin' }];
+    sendSmtpEmail.subject = `New Order #${order.orderNumber} - ${order.customerName}`;
+    sendSmtpEmail.htmlContent = html;
+
     try {
-        const { data, error } = await resend.emails.send({
-            from: 'no-reply@paperbloom.com',  // IMPORTANT: Must be a VERIFIED sender in Resend dashboard
-            to: adminEmail,
-            subject: `New Order #${order.orderNumber} - ${order.customerName}`,
-            html: html,
-            // Optional: replyTo: 'support@paperbloom.com',
-            // Optional: text: 'Plain text fallback version here if needed'
-        });
-
-        if (error) {
-            console.error('Resend error:', error);
-            throw new Error(error.message || 'Failed to send email via Resend');
-        }
-
-        console.log('Admin notification email sent via Resend:', data.id);
-        return { success: true, messageId: data.id };
+        const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
+        console.log('Admin notification sent via Brevo API:', data.messageId);
+        return { success: true, messageId: data.messageId };
     } catch (error) {
-        console.error('Failed to send admin notification email:', error);
-        return { success: false, error: error.message };
+        console.error('Brevo API error:', error);
+        return { success: false, error: error.message || error.body?.message };
     }
 };
 
-// Optional: Update sendEmail helper (used by confirmation/status functions)
 export const sendEmail = async (to, subject, html, text = '') => {
+    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+    sendSmtpEmail.sender = { 
+        email: 'montsikhotso@gmail.com',
+        name: 'PaperBloom Team' 
+    };
+    sendSmtpEmail.to = [{ email: to }];
+    sendSmtpEmail.subject = subject;
+    sendSmtpEmail.htmlContent = html;
+    sendSmtpEmail.textContent = text || html.replace(/<[^>]*>/g, '');
+
     try {
-        const { data, error } = await resend.emails.send({
-            from: 'no-reply@paperbloom.com',  // Verified sender
-            to,
-            subject,
-            html,
-            text: text || html.replace(/<[^>]*>/g, ''),
-        });
-
-        if (error) throw new Error(error.message);
-
-        console.log('Email sent via Resend:', data.id);
-        return { success: true, messageId: data.id };
+        const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
+        console.log('Email sent via Brevo API:', data.messageId);
+        return { success: true, messageId: data.messageId };
     } catch (error) {
-        console.error('Email sending failed:', error);
+        console.error('Brevo send failed:', error);
         return { success: false, error: error.message };
     }
 };
 
-/**
- * Send order confirmation template to customer
- * @param {string} to - Customer email
- * @param {Object} order - Order details
- * @returns {Promise<Object>} - Send result
- */
 export const sendOrderConfirmation = async (to, order) => {
     const html = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -176,13 +162,6 @@ export const sendOrderConfirmation = async (to, order) => {
     return sendEmail(to, 'Your PaperBloom Order Confirmation', html);
 };
 
-/**
- * Send order status update
- * @param {string} to - Customer email
- * @param {Object} order - Order details
- * @param {string} newStatus - Updated status
- * @returns {Promise<Object>} - Send result
- */
 export const sendStatusUpdate = async (to, order, newStatus) => {
     const html = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
