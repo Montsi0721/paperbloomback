@@ -1,11 +1,10 @@
 import { TransactionalEmailsApi, SendSmtpEmail } from '@getbrevo/brevo';
 
-// Instantiate the API once
+// Instantiate the API client once (outside of functions)
 const transactionalEmailsApi = new TransactionalEmailsApi();
-transactionalEmailsApi.setApiKey(
-  TransactionalEmailsApiApiKeys.apiKey,
-  process.env.BREVO_API_KEY
-);
+
+// Set the API key correctly (this is the standard method)
+transactionalEmailsApi.authentications.apiKey.apiKey = process.env.BREVO_API_KEY;
 
 /**
  * Send order notification to admin
@@ -14,18 +13,18 @@ transactionalEmailsApi.setApiKey(
  * @returns {Promise<Object>} - Result object with success status
  */
 export const sendOrderMail = async (order, itemDetails) => {
-  const adminEmail = process.env.MAIL_USER;
+    const adminEmail = process.env.MAIL_USER;
 
-  const itemsHtml = itemDetails.map(item => `
-    <tr>
-      <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">${item.name}</td>
-      <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: center;">${item.quantity}</td>
-      <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: right;">M${item.price.toFixed(2)}</td>
-      <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: right;">M${item.total.toFixed(2)}</td>
-    </tr>
-  `).join('');
+    const itemsHtml = itemDetails.map(item => `
+        <tr>
+            <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">${item.name}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: center;">${item.quantity}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: right;">M${item.price.toFixed(2)}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: right;">M${item.total.toFixed(2)}</td>
+        </tr>
+    `).join('');
 
-  const html = `
+    const html = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
             <div style="background: #e74c3c; color: white; padding: 20px; text-align: center;">
                 <h1 style="margin: 0;">New Order Received!</h1>
@@ -95,44 +94,44 @@ export const sendOrderMail = async (order, itemDetails) => {
         </div>
     `;
 
-  const sendSmtpEmail = new SendSmtpEmail();
-  sendSmtpEmail.sender = {
-    email: 'montsikhotso@gmail.com',  // Must match the verified sender in Brevo
-    name: 'PaperBloom Team'
-  };
-  sendSmtpEmail.to = [{ email: adminEmail }];
-  sendSmtpEmail.subject = `New Order #${order.orderNumber} - ${order.customerName}`;
-  sendSmtpEmail.htmlContent = html;
+    const sendSmtpEmail = new SendSmtpEmail();
+    sendSmtpEmail.sender = {
+        email: 'montsikhotso@gmail.com',  // Must exactly match a VERIFIED sender in Brevo dashboard
+        name: 'PaperBloom Team'
+    };
+    sendSmtpEmail.to = [{ email: adminEmail }];
+    sendSmtpEmail.subject = `New Order #${order.orderNumber} - ${order.customerName}`;
+    sendSmtpEmail.htmlContent = html;
 
-  try {
-    const data = await transactionalEmailsApi.sendTransacEmail(sendSmtpEmail);
-    console.log('Admin notification email sent via Brevo:', data.messageId);
-    return { success: true, messageId: data.messageId };
-  } catch (error) {
-    console.error('Failed to send admin notification email via Brevo:', error.body || error);
-    return { success: false, error: error.message || (error.body && error.body.message) };
-  }
+    try {
+        const data = await transactionalEmailsApi.sendTransacEmail(sendSmtpEmail);
+        console.log('Admin notification email sent via Brevo:', data.messageId);
+        return { success: true, messageId: data.messageId };
+    } catch (error) {
+        console.error('Failed to send admin notification email via Brevo:', error.body || error);
+        return { success: false, error: error.message || (error.body && error.body.message) };
+    }
 };
 
 export const sendEmail = async (to, subject, html, text = '') => {
-  const sendSmtpEmail = new SendSmtpEmail();
-  sendSmtpEmail.sender = { 
+    const sendSmtpEmail = new SendSmtpEmail();
+    sendSmtpEmail.sender = {
         email: 'montsikhotso@gmail.com',
-        name: 'PaperBloom Team' 
+        name: 'PaperBloom Team'
     };
-  sendSmtpEmail.to = [{ email: to }];
-  sendSmtpEmail.subject = subject;
-  sendSmtpEmail.htmlContent = html;
-  sendSmtpEmail.textContent = text || html.replace(/<[^>]*>/g, '');
+    sendSmtpEmail.to = [{ email: to }];
+    sendSmtpEmail.subject = subject;
+    sendSmtpEmail.htmlContent = html;
+    sendSmtpEmail.textContent = text || html.replace(/<[^>]*>/g, '');
 
-  try {
-    const data = await transactionalEmailsApi.sendTransacEmail(sendSmtpEmail);
-    console.log('Email sent via Brevo:', data.messageId);
-    return { success: true, messageId: data.messageId };
-  } catch (error) {
-    console.error('Brevo email sending failed:', error);
-    return { success: false, error: error.message };
-  }
+    try {
+        const data = await transactionalEmailsApi.sendTransacEmail(sendSmtpEmail);
+        console.log('Email sent via Brevo:', data.messageId);
+        return { success: true, messageId: data.messageId };
+    } catch (error) {
+        console.error('Brevo email sending failed:', error);
+        return { success: false, error: error.message };
+    }
 };
 
 export const sendOrderConfirmation = async (to, order) => {
