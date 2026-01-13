@@ -1,16 +1,7 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
-// Create transporter
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        type: 'OAuth2',
-        user: process.env.MAIL_USER,
-        clientId: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
-    }
-});
+// Initialize Resend client once
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 /**
  * Send order notification to admin
@@ -20,7 +11,7 @@ const transporter = nodemailer.createTransport({
  */
 export const sendOrderMail = async (order, itemDetails) => {
     const adminEmail = process.env.MAIL_USER;
-    
+
     const itemsHtml = itemDetails.map(item => `
         <tr>
             <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">${item.name}</td>
@@ -101,41 +92,43 @@ export const sendOrderMail = async (order, itemDetails) => {
     `;
 
     try {
-        const info = await transporter.sendMail({
-            from: '"PaperBloom Orders" <no-reply@paperbloom.com>',
+        const { data, error } = await resend.emails.send({
+            from: 'no-reply@paperbloom.com',  // IMPORTANT: Must be a VERIFIED sender in Resend dashboard
             to: adminEmail,
             subject: `New Order #${order.orderNumber} - ${order.customerName}`,
-            html
+            html: html,
+            // Optional: replyTo: 'support@paperbloom.com',
+            // Optional: text: 'Plain text fallback version here if needed'
         });
-        
-        console.log('Admin notification email sent:', info.messageId);
-        return { success: true, messageId: info.messageId };
+
+        if (error) {
+            console.error('Resend error:', error);
+            throw new Error(error.message || 'Failed to send email via Resend');
+        }
+
+        console.log('Admin notification email sent via Resend:', data.id);
+        return { success: true, messageId: data.id };
     } catch (error) {
         console.error('Failed to send admin notification email:', error);
         return { success: false, error: error.message };
     }
 };
 
-/**
- * Send email with error handling
- * @param {string} to - Recipient email
- * @param {string} subject - Email subject
- * @param {string} html - HTML content
- * @param {string} [text] - Plain text fallback
- * @returns {Promise<Object>} - Result object with success status
- */
+// Optional: Update sendEmail helper (used by confirmation/status functions)
 export const sendEmail = async (to, subject, html, text = '') => {
     try {
-        const info = await transporter.sendMail({
-            from: '"PaperBloom" <no-reply@paperbloom.com>',
+        const { data, error } = await resend.emails.send({
+            from: 'no-reply@paperbloom.com',  // Verified sender
             to,
             subject,
+            html,
             text: text || html.replace(/<[^>]*>/g, ''),
-            html
         });
-        
-        console.log('Email sent:', info.messageId);
-        return { success: true, messageId: info.messageId };
+
+        if (error) throw new Error(error.message);
+
+        console.log('Email sent via Resend:', data.id);
+        return { success: true, messageId: data.id };
     } catch (error) {
         console.error('Email sending failed:', error);
         return { success: false, error: error.message };
@@ -222,15 +215,4 @@ export const sendStatusUpdate = async (to, order, newStatus) => {
     return sendEmail(to, `Order #${order.orderNumber} Status Update: ${newStatus}`, html);
 };
 
-export const testEmail = async () => {
-    try {
-        const result = await transporter.verify();
-        console.log('Email server is ready:', result);
-        return true;
-    } catch (error) {
-        console.error('Email server connection failed:', error);
-        return false;
-    }
-};
-
-export default transporter;
+export default resend;
