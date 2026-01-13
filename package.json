@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node server.js",
     "seed": "node seed/products.seed.js",
+    "create-admin": "node createAdmin.js",
     "dev": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
