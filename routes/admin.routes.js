@@ -12,7 +12,7 @@ router.post('/login', async (req, res) => {
     const admin = await Admin.findOne({ username });
     if (!admin) {
         console.log('Admin not found for username:', username);
-        return res.status(401).json({ message: 'Invalid credentials' });
+        return res.status(401).json({'Invalid credentials' });
     } 
     
     const isPasswordValid = await admin.comparePassword(password);
@@ -20,7 +20,7 @@ router.post('/login', async (req, res) => {
     
     if (!isPasswordValid) {
         console.log('Invalid password for admin:', username);
-        return res.status(401).json({ message: 'Invalid credentials' });
+        return res.status(401).json({'Invalid credentials' });
     }
 
     const token = jwt.sign(

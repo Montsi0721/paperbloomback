@@ -8,7 +8,7 @@ const products = [
     {
         name: 'Paper Rose Bouquet',
         description: 'Handcrafted red paper roses wrapped in premium paper.',
-        price: 250,
+        price: 150,
         stock: 20,
         category: 'Bouquet',
         image: 'https://paperbloomback.onrender.com/images/red_rose_bouquet.jpeg'
@@ -22,67 +22,67 @@ const products = [
         image: 'https://paperbloomback.onrender.com/images/single_sunflower.jpeg'
     },
     {
-        name: 'Paper Lily Arrangement',
+        name: 'Pink rose bouquet',
         description: 'Elegant white paper lilies for special occasions.',
-        price: 300,
+        price: 150,
         stock: 15,
-        category: 'Arrangements',
+        category: 'Bouquet',
         image: 'https://paperbloomback.onrender.com/images/pink_rose_bouquet.jpeg'
     },
     {
         name: 'Custom Name Flower Box',
         description: 'Personalized flower box with custom name.',
-        price: 450,
+        price: 250,
         stock: 10,
         category: 'Set',
         image: 'https://paperbloomback.onrender.com/images/flower_box2.jpeg'
     },
     {
-        name: 'Mini Paper Tulip Set',
+        name: 'Single custom flower',
         description: 'Set of 5 colorful paper tulips in a small vase.',
-        price: 180,
+        price: 30,
         stock: 25,
-        category: 'Set',
+        category: 'Single Flower',
         image: 'https://paperbloomback.onrender.com/images/paper_tulips.jpeg'
     },
     {
-        name: 'Paper Orchid Plant',
+        name: 'Single Paper rose',
         description: 'Lifelike paper orchid in a decorative ceramic pot.',
-        price: 350,
+        price: 20,
         stock: 12,
-        category: 'Arrangements',
+        category: 'Single Flower',
         image: 'https://paperbloomback.onrender.com/images/paper_orchid.jpeg'
     },
     {
-        name: 'Birthday Paper Flower Basket',
+        name: 'Various color bouquet',
         description: 'Mixed paper flowers basket perfect for birthday celebrations.',
-        price: 280,
+        price: 80,
         stock: 18,
         category: 'Bouquet',
         image: 'https://paperbloomback.onrender.com/images/birthday_basket.jpeg'
     },
     {
-        name: 'Paper Daisy Garland',
+        name: 'Mixed flower bouquet',
         description: '3-meter garland of white and yellow paper daisies.',
-        price: 220,
+        price: 80,
         stock: 22,
-        category: 'Decorations',
+        category: 'Bouquet',
         image: 'https://paperbloomback.onrender.com/images/daisy_garland.jpeg'
     },
     {
-        name: 'Paper Peony Collection',
+        name: 'Single minimal rose',
         description: 'Large paper peonies in various pastel colors.',
-        price: 320,
+        price: 20,
         stock: 14,
         category: 'Single Flower',
         image: 'https://paperbloomback.onrender.com/images/paper_peony.jpeg'
     },
     {
-        name: 'Wedding Paper Flower Arch Kit',
+        name: 'Various color singles',
         description: 'Complete kit to create a beautiful paper flower wedding arch.',
-        price: 850,
+        price: 20,
         stock: 8,
-        category: 'Set',
+        category: 'Single Flower',
         image: 'https://paperbloomback.onrender.com/images/wedding_arch_kit.jpeg'
     }
 ];
