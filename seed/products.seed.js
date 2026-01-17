@@ -16,7 +16,7 @@ const products = [
     {
         name: 'Paper Sunflower',
         description: 'Bright handmade sunflower made from recycled paper.',
-        price: 120,
+        price: 30,
         stock: 30,
         category: 'Single Flower',
         image: 'https://paperbloomback.onrender.com/images/single_sunflower.jpeg'
@@ -56,7 +56,7 @@ const products = [
     {
         name: 'Various color bouquet',
         description: 'Mixed paper flowers basket perfect for birthday celebrations.',
-        price: 80,
+        price: 150,
         stock: 18,
         category: 'Bouquet',
         image: 'https://paperbloomback.onrender.com/images/birthday_basket.jpeg'
@@ -64,7 +64,7 @@ const products = [
     {
         name: 'Mixed flower bouquet',
         description: '3-meter garland of white and yellow paper daisies.',
-        price: 80,
+        price: 150,
         stock: 22,
         category: 'Bouquet',
         image: 'https://paperbloomback.onrender.com/images/daisy_garland.jpeg'
@@ -108,4 +108,5 @@ try {
 } catch (err) {
     console.error('Seeding failed:', err.message);
     process.exit(1);
+
 }
